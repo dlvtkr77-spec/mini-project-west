@@ -11,6 +11,10 @@
     rel="stylesheet"
     href="style.css"
   >
+  <link
+    rel="stylesheet"
+    href="chatbot.css"
+  >
 </head>
 
 
@@ -1529,7 +1533,69 @@
 
 
 <script src="script.js"></script>
+<script src="chatbot.js"></script>
 
+<!-- =========================
+     자격증 접수 챗봇
+========================= -->
 
+<button
+  id="chatbot-floating-btn"
+  class="chatbot-floating-btn"
+  type="button"
+  aria-label="챗봇 열기"
+>
+  상담
+</button>
+
+<div
+  id="chatbot-window"
+  class="chatbot-window chatbot-hidden"
+>
+  <div class="chatbot-header">
+
+    <div class="chatbot-header-title">
+      <strong>자격증 접수 도우미</strong>
+      <span>AI 상담</span>
+    </div>
+
+    <button
+      id="chatbot-close-btn"
+      class="chatbot-close-btn"
+      type="button"
+      aria-label="챗봇 닫기"
+    >
+      ×
+    </button>
+
+  </div>
+
+  <div
+    id="chatbot-messages"
+    class="chatbot-messages"
+  ></div>
+
+  <div class="chatbot-input-area">
+
+    <input
+      id="chatbot-input"
+      class="chatbot-input"
+      type="text"
+      placeholder="궁금한 내용을 입력해주세요"
+      autocomplete="off"
+    >
+
+    <button
+      id="chatbot-send-btn"
+      class="chatbot-send-btn"
+      type="button"
+    >
+      전송
+    </button>
+
+  </div>
+</div>
+
+<script src="./chatbot.js"></script>
 </body>
 </html>
