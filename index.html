@@ -3,93 +3,350 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>시니어 자격증 간편접수</title>
-
+  <title>두두 자격증 간편접수</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <header>
-    <h1>시니어 자격증 간편접수</h1>
-    <p>신청하실 자격증을 선택하고 정보를 입력해주세요.</p>
-  </header>
+<header class="top-header">
+  <div class="nav">
+    <div class="logo">두두 자격지원</div>
 
-  <main>
+    <nav>
+      <a href="#open-exams">접수 중인 시험</a>
+      <a href="#certificates">자격증 찾기</a>
+      <a href="/cb/">자격증 문의</a>
+    </nav>
+  </div>
+</header>
 
-    <!-- 자격증 선택 -->
-    <section class="certificate-section">
-      <h2>1. 신청할 자격증을 선택해주세요</h2>
+<main>
 
-      <div class="certificate-list">
+  <!-- 메인 -->
+  <section class="hero">
+    <span class="hero-label">시니어 자격증 간편접수</span>
 
-        <button
-          type="button"
-          class="certificate-card"
-          data-certificate="한식조리기능사">
-          한식조리기능사
-        </button>
+    <h1>
+      자격증 시험 접수,<br>
+      이제 어렵지 않아요
+    </h1>
 
-        <button
-          type="button"
-          class="certificate-card"
-          data-certificate="전기기능사">
-          전기기능사
-        </button>
+    <p>
+      원하는 자격증을 찾고<br class="mobile-break">
+      간편하게 접수해보세요.
+    </p>
 
-        <button
-          type="button"
-          class="certificate-card"
-          data-certificate="공인중개사">
-          공인중개사
-        </button>
+    <div class="search-box">
+      <input
+        type="text"
+        id="certificate-search"
+        placeholder="자격증 이름을 검색해주세요"
+      >
+      <button type="button" id="search-button">검색</button>
+    </div>
+  </section>
 
+
+  <!-- 현재 접수 안내 -->
+  <section class="content-section" id="open-exams">
+
+    <div class="section-heading">
+      <div>
+        <span class="section-number">01</span>
+        <h2>접수 안내</h2>
       </div>
-    </section>
+
+      <p>접수 일정이 확인된 시험을 안내합니다.</p>
+    </div>
+
+    <div class="open-grid">
+
+      <article class="open-card">
+        <span class="status ongoing">상시 접수</span>
+
+        <h3>요양보호사</h3>
+
+        <p class="category">상시 국가자격시험</p>
+
+        <div class="exam-info">
+          <span>접수기간</span>
+          <strong>시험일 7일 전까지</strong>
+        </div>
+
+        <button
+          type="button"
+          class="info-button"
+          data-search="요양보호사">
+          자격증 보기
+        </button>
+      </article>
 
 
-    <!-- 신청자 정보 -->
-    <section class="application-section">
-      <h2>2. 신청자 정보를 입력해주세요</h2>
+      <article class="open-card">
+        <span class="status ended">접수 종료</span>
+
+        <h3>공인중개사</h3>
+
+        <p class="category">37회 1차 시험</p>
+
+        <div class="exam-info">
+          <span>접수기간</span>
+          <strong>2026.08.03 ~ 08.07</strong>
+        </div>
+
+        <button
+          type="button"
+          class="apply-button"
+          data-certificate="공인중개사">
+          접수 정보 확인
+        </button>
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- 자격증 전체 -->
+  <section class="content-section" id="certificates">
+
+    <div class="section-heading">
+      <div>
+        <span class="section-number">02</span>
+        <h2>자격증 찾기</h2>
+      </div>
+
+      <p>원하는 자격증을 선택해주세요.</p>
+    </div>
+
+
+    <div class="certificate-grid" id="certificate-grid">
+
+      <article class="certificate-card available"
+               data-name="한식조리기능사">
+        <span class="certificate-type">기능사</span>
+        <h3>한식조리기능사</h3>
+        <p>조리 분야 국가기술자격</p>
+
+        <button
+          type="button"
+          class="apply-button"
+          data-certificate="한식조리기능사">
+          접수하기
+        </button>
+      </article>
+
+
+      <article class="certificate-card"
+               data-name="지게차운전기능사">
+        <span class="certificate-type">기능사</span>
+        <h3>지게차운전기능사</h3>
+        <p>물류·운전 분야 국가기술자격</p>
+
+        <button type="button" class="disabled-button">
+          접수 준비중
+        </button>
+      </article>
+
+
+      <article class="certificate-card"
+               data-name="굴착기운전기능사">
+        <span class="certificate-type">기능사</span>
+        <h3>굴착기운전기능사</h3>
+        <p>건설기계 분야 국가기술자격</p>
+
+        <button type="button" class="disabled-button">
+          접수 준비중
+        </button>
+      </article>
+
+
+      <article class="certificate-card available"
+               data-name="전기기능사">
+        <span class="certificate-type">기능사</span>
+        <h3>전기기능사</h3>
+        <p>전기 분야 국가기술자격</p>
+
+        <button
+          type="button"
+          class="apply-button"
+          data-certificate="전기기능사">
+          접수하기
+        </button>
+      </article>
+
+
+      <article class="certificate-card"
+               data-name="요양보호사">
+        <span class="certificate-type">국가시험</span>
+        <h3>요양보호사</h3>
+        <p>요양보호 분야 국가자격시험</p>
+
+        <button type="button" class="disabled-button">
+          접수 준비중
+        </button>
+      </article>
+
+
+      <article class="certificate-card"
+               data-name="위생사">
+        <span class="certificate-type">국가시험</span>
+        <h3>위생사</h3>
+        <p>위생 분야 국가자격시험</p>
+
+        <button type="button" class="disabled-button">
+          접수 준비중
+        </button>
+      </article>
+
+
+      <article class="certificate-card"
+               data-name="손해평가사">
+        <span class="certificate-type">전문자격</span>
+        <h3>손해평가사</h3>
+        <p>농업재해 손해평가 전문자격</p>
+
+        <button type="button" class="disabled-button">
+          접수 준비중
+        </button>
+      </article>
+
+
+      <article class="certificate-card available"
+               data-name="공인중개사">
+        <span class="certificate-type">전문자격</span>
+        <h3>공인중개사</h3>
+        <p>부동산 중개 전문자격</p>
+
+        <button
+          type="button"
+          class="apply-button"
+          data-certificate="공인중개사">
+          접수하기
+        </button>
+      </article>
+
+    </div>
+
+    <p id="no-result" class="no-result">
+      검색 결과가 없습니다.
+    </p>
+
+  </section>
+
+
+  <!-- 신청 폼 -->
+  <section class="application-section" id="application">
+
+    <div class="form-wrapper">
+
+      <div class="form-heading">
+        <span class="section-number">03</span>
+        <h2>시험 접수하기</h2>
+        <p>신청자 정보를 입력해주세요.</p>
+      </div>
+
+
+      <div class="selected-exam">
+        <span>선택한 자격증</span>
+        <strong id="selected-certificate-name">
+          자격증을 먼저 선택해주세요
+        </strong>
+      </div>
+
 
       <form id="application-form">
 
+        <input
+          type="hidden"
+          id="selected-certificate"
+          name="certificate"
+        >
+
+
         <div class="form-group">
-          <label for="name">이름</label>
+          <label for="name">이름 <span>*</span></label>
+
           <input
             type="text"
             id="name"
             name="name"
             placeholder="이름을 입력해주세요"
-            required>
+            required
+          >
         </div>
 
+
         <div class="form-group">
-          <label for="phone">연락처</label>
+          <label for="phone">휴대전화 번호 <span>*</span></label>
+
           <input
             type="tel"
             id="phone"
             name="phone"
             placeholder="010-0000-0000"
-            required>
+            required
+          >
         </div>
 
-        <input
-          type="hidden"
-          id="selected-certificate"
-          name="certificate">
 
-        <button type="submit" class="submit-button">
+        <div class="notice">
+          입력하신 정보는 자격증 접수 확인을 위해 사용됩니다.
+        </div>
+
+
+        <button
+          type="submit"
+          class="submit-button">
           접수 신청하기
         </button>
 
       </form>
-    </section>
 
-  </main>
+    </div>
 
-  <script src="script.js"></script>
+  </section>
+
+</main>
+
+
+<!-- 접수 완료 -->
+<div class="modal" id="complete-modal">
+
+  <div class="modal-content">
+
+    <div class="check-icon">✓</div>
+
+    <h2>접수가 완료되었습니다</h2>
+
+    <p>
+      신청하신 내용이 정상적으로 접수되었습니다.
+    </p>
+
+    <div class="complete-info">
+      <span>신청 자격증</span>
+      <strong id="complete-certificate"></strong>
+    </div>
+
+    <button
+      type="button"
+      id="close-modal">
+      확인
+    </button>
+
+  </div>
+
+</div>
+
+
+<footer>
+  <strong>두두 자격지원</strong>
+  <p>시니어를 위한 자격증 간편접수 서비스</p>
+</footer>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
