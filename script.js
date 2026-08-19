@@ -5,26 +5,62 @@ const applicationForm = document.getElementById("application-form");
 certificateCards.forEach((card) => {
   card.addEventListener("click", () => {
 
-    // 기존 선택 표시 제거
     certificateCards.forEach((item) => {
       item.classList.remove("selected");
     });
 
-    // 클릭한 자격증 선택 표시
     card.classList.add("selected");
-
-    // 선택한 자격증 저장
     selectedCertificateInput.value = card.dataset.certificate;
   });
 });
 
-applicationForm.addEventListener("submit", (event) => {
+applicationForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  if (!selectedCertificateInput.value) {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const certificate = selectedCertificateInput.value;
+
+  if (!certificate) {
     alert("신청할 자격증을 선택해주세요.");
     return;
   }
 
-  alert("입력 정보를 확인했습니다.");
+  if (!name || !phone) {
+    alert("이름과 연락처를 입력해주세요.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/applications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        phone,
+        certificate
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+
+    alert("접수가 완료되었습니다.");
+
+    applicationForm.reset();
+    selectedCertificateInput.value = "";
+
+    certificateCards.forEach((card) => {
+      card.classList.remove("selected");
+    });
+
+  } catch (error) {
+    console.error(error);
+    alert("접수 중 오류가 발생했습니다.");
+  }
 });
