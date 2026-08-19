@@ -1,337 +1,1511 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>자격증 간편접수</title>
-  <link rel="stylesheet" href="style.css">
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
+
 
 <body>
 
+
+<!-- =========================
+     HEADER
+========================= -->
+
 <header class="top-header">
+
   <div class="nav">
-   <div class="logo">자격증 간편접수</div>
+
+    <div class="logo">
+      자격증 간편접수
+    </div>
 
     <nav>
-      <a href="#open-exams">접수 중인 시험</a>
-      <a href="#certificates">자격증 찾기</a>
-      <a href="/cb/">자격증 문의</a>
+      <a href="#open-exams">
+        접수 중인 시험
+      </a>
+
+      <a href="#certificates">
+        자격증 찾기
+      </a>
+
+      <a href="/cb/">
+        자격증 문의
+      </a>
     </nav>
+
   </div>
+
 </header>
+
+
 
 <main>
 
-  <!-- 메인 -->
-  <section class="hero">
-    <span class="hero-label">시니어 자격증 간편접수</span>
 
-    <h1>
-      자격증 시험 접수,<br>
-      이제 어렵지 않아요
-    </h1>
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+  <span class="hero-label">
+    시니어 자격증 간편접수
+  </span>
+
+  <h1>
+    자격증 시험 접수,<br>
+    이제 어렵지 않아요
+  </h1>
+
+  <p>
+    원하는 자격증을 찾고<br class="mobile-break">
+    간편하게 접수해보세요.
+  </p>
+
+
+  <div class="search-box">
+
+    <input
+      type="text"
+      id="certificate-search"
+      placeholder="자격증 이름을 검색해주세요"
+    >
+
+    <button
+      type="button"
+      id="search-button"
+    >
+      검색
+    </button>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================
+     접수 안내
+========================= -->
+
+<section
+  class="content-section"
+  id="open-exams"
+>
+
+  <div class="section-heading">
+
+    <div>
+      <span class="section-number">
+        01
+      </span>
+
+      <h2>
+        접수 안내
+      </h2>
+    </div>
 
     <p>
-      원하는 자격증을 찾고<br class="mobile-break">
-      간편하게 접수해보세요.
+      접수 일정이 확인된 시험을 안내합니다.
     </p>
 
-    <div class="search-box">
-      <input
-        type="text"
-        id="certificate-search"
-        placeholder="자격증 이름을 검색해주세요"
+  </div>
+
+
+  <div class="open-grid">
+
+
+    <!-- 요양보호사 -->
+
+    <article class="open-card">
+
+      <span class="status ongoing">
+        상시 접수
+      </span>
+
+      <h3>
+        요양보호사
+      </h3>
+
+      <p class="category">
+        상시 국가자격시험
+      </p>
+
+      <div class="exam-info">
+
+        <span>
+          접수기간
+        </span>
+
+        <strong>
+          시험일 7일 전까지
+        </strong>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="info-button"
+        data-search="요양보호사"
       >
-      <button type="button" id="search-button">검색</button>
-    </div>
-  </section>
+        자격증 보기
+      </button>
+
+    </article>
 
 
-  <!-- 현재 접수 안내 -->
-  <section class="content-section" id="open-exams">
+    <!-- 공인중개사 -->
 
-    <div class="section-heading">
-      <div>
-        <span class="section-number">01</span>
-        <h2>접수 안내</h2>
+    <article class="open-card">
+
+      <span class="status ended">
+        접수 종료
+      </span>
+
+      <h3>
+        공인중개사
+      </h3>
+
+      <p class="category">
+        37회 1차 시험
+      </p>
+
+      <div class="exam-info">
+
+        <span>
+          접수기간
+        </span>
+
+        <strong>
+          2026.08.03 ~ 08.07
+        </strong>
+
       </div>
 
-      <p>접수 일정이 확인된 시험을 안내합니다.</p>
-    </div>
 
-    <div class="open-grid">
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="공인중개사"
+      >
+        접수 정보 확인
+      </button>
 
-      <article class="open-card">
-        <span class="status ongoing">상시 접수</span>
-
-        <h3>요양보호사</h3>
-
-        <p class="category">상시 국가자격시험</p>
-
-        <div class="exam-info">
-          <span>접수기간</span>
-          <strong>시험일 7일 전까지</strong>
-        </div>
-
-        <button
-          type="button"
-          class="info-button"
-          data-search="요양보호사">
-          자격증 보기
-        </button>
-      </article>
+    </article>
 
 
-      <article class="open-card">
-        <span class="status ended">접수 종료</span>
+  </div>
 
-        <h3>공인중개사</h3>
+</section>
 
-        <p class="category">37회 1차 시험</p>
 
-        <div class="exam-info">
-          <span>접수기간</span>
-          <strong>2026.08.03 ~ 08.07</strong>
-        </div>
 
-        <button
-          type="button"
-          class="apply-button"
-          data-certificate="공인중개사">
-          접수 정보 확인
-        </button>
-      </article>
+<!-- =========================
+     자격증 전체
+========================= -->
+
+<section
+  class="content-section"
+  id="certificates"
+>
+
+  <div class="section-heading">
+
+    <div>
+
+      <span class="section-number">
+        02
+      </span>
+
+      <h2>
+        자격증 찾기
+      </h2>
 
     </div>
 
-  </section>
-
-
-  <!-- 자격증 전체 -->
-  <section class="content-section" id="certificates">
-
-    <div class="section-heading">
-      <div>
-        <span class="section-number">02</span>
-        <h2>자격증 찾기</h2>
-      </div>
-
-      <p>원하는 자격증을 선택해주세요.</p>
-    </div>
-
-
-    <div class="certificate-grid" id="certificate-grid">
-
-      <article class="certificate-card available"
-               data-name="한식조리기능사">
-        <span class="certificate-type">기능사</span>
-        <h3>한식조리기능사</h3>
-        <p>조리 분야 국가기술자격</p>
-
-        <button
-          type="button"
-          class="apply-button"
-          data-certificate="한식조리기능사">
-          접수하기
-        </button>
-      </article>
-
-
-      <article class="certificate-card"
-               data-name="지게차운전기능사">
-        <span class="certificate-type">기능사</span>
-        <h3>지게차운전기능사</h3>
-        <p>물류·운전 분야 국가기술자격</p>
-
-        <button type="button" class="disabled-button">
-          접수 준비중
-        </button>
-      </article>
-
-
-      <article class="certificate-card"
-               data-name="굴착기운전기능사">
-        <span class="certificate-type">기능사</span>
-        <h3>굴착기운전기능사</h3>
-        <p>건설기계 분야 국가기술자격</p>
-
-        <button type="button" class="disabled-button">
-          접수 준비중
-        </button>
-      </article>
-
-
-      <article class="certificate-card available"
-               data-name="전기기능사">
-        <span class="certificate-type">기능사</span>
-        <h3>전기기능사</h3>
-        <p>전기 분야 국가기술자격</p>
-
-        <button
-          type="button"
-          class="apply-button"
-          data-certificate="전기기능사">
-          접수하기
-        </button>
-      </article>
-
-
-      <article class="certificate-card"
-               data-name="요양보호사">
-        <span class="certificate-type">국가시험</span>
-        <h3>요양보호사</h3>
-        <p>요양보호 분야 국가자격시험</p>
-
-        <button type="button" class="disabled-button">
-          접수 준비중
-        </button>
-      </article>
-
-
-      <article class="certificate-card"
-               data-name="위생사">
-        <span class="certificate-type">국가시험</span>
-        <h3>위생사</h3>
-        <p>위생 분야 국가자격시험</p>
-
-        <button type="button" class="disabled-button">
-          접수 준비중
-        </button>
-      </article>
-
-
-      <article class="certificate-card"
-               data-name="손해평가사">
-        <span class="certificate-type">전문자격</span>
-        <h3>손해평가사</h3>
-        <p>농업재해 손해평가 전문자격</p>
-
-        <button type="button" class="disabled-button">
-          접수 준비중
-        </button>
-      </article>
-
-
-      <article class="certificate-card available"
-               data-name="공인중개사">
-        <span class="certificate-type">전문자격</span>
-        <h3>공인중개사</h3>
-        <p>부동산 중개 전문자격</p>
-
-        <button
-          type="button"
-          class="apply-button"
-          data-certificate="공인중개사">
-          접수하기
-        </button>
-      </article>
-
-    </div>
-
-    <p id="no-result" class="no-result">
-      검색 결과가 없습니다.
+    <p>
+      원하는 자격증을 선택해주세요.
     </p>
 
-  </section>
+  </div>
 
 
-  <!-- 신청 폼 -->
-  <section class="application-section" id="application">
-
-    <div class="form-wrapper">
-
-      <div class="form-heading">
-        <span class="section-number">03</span>
-        <h2>시험 접수하기</h2>
-        <p>신청자 정보를 입력해주세요.</p>
-      </div>
+  <div
+    class="certificate-grid"
+    id="certificate-grid"
+  >
 
 
-      <div class="selected-exam">
-        <span>선택한 자격증</span>
+    <!-- 한식조리기능사 -->
+
+    <article
+      class="certificate-card available"
+      data-name="한식조리기능사"
+    >
+
+      <span class="certificate-type">
+        기능사
+      </span>
+
+      <h3>
+        한식조리기능사
+      </h3>
+
+      <p>
+        조리 분야 국가기술자격
+      </p>
+
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="한식조리기능사"
+      >
+        접수하기
+      </button>
+
+    </article>
+
+
+    <!-- 지게차운전기능사 -->
+
+    <article
+      class="certificate-card available"
+      data-name="지게차운전기능사"
+    >
+
+      <span class="certificate-type">
+        기능사
+      </span>
+
+      <h3>
+        지게차운전기능사
+      </h3>
+
+      <p>
+        물류·운전 분야 국가기술자격
+      </p>
+
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="지게차운전기능사"
+      >
+        접수하기
+      </button>
+
+    </article>
+
+
+    <!-- 굴착기운전기능사 -->
+
+    <article
+      class="certificate-card available"
+      data-name="굴착기운전기능사"
+    >
+
+      <span class="certificate-type">
+        기능사
+      </span>
+
+      <h3>
+        굴착기운전기능사
+      </h3>
+
+      <p>
+        건설기계 분야 국가기술자격
+      </p>
+
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="굴착기운전기능사"
+      >
+        접수하기
+      </button>
+
+    </article>
+
+
+    <!-- 전기기능사 -->
+
+    <article
+      class="certificate-card available"
+      data-name="전기기능사"
+    >
+
+      <span class="certificate-type">
+        기능사
+      </span>
+
+      <h3>
+        전기기능사
+      </h3>
+
+      <p>
+        전기 분야 국가기술자격
+      </p>
+
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="전기기능사"
+      >
+        접수하기
+      </button>
+
+    </article>
+
+
+    <!-- 요양보호사 -->
+
+    <article
+      class="certificate-card available"
+      data-name="요양보호사"
+    >
+
+      <span class="certificate-type">
+        국가시험
+      </span>
+
+      <h3>
+        요양보호사
+      </h3>
+
+      <p>
+        요양보호 분야 국가자격시험
+      </p>
+
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="요양보호사"
+      >
+        접수하기
+      </button>
+
+    </article>
+
+
+    <!-- 위생사 -->
+
+    <article
+      class="certificate-card available"
+      data-name="위생사"
+    >
+
+      <span class="certificate-type">
+        국가시험
+      </span>
+
+      <h3>
+        위생사
+      </h3>
+
+      <p>
+        위생 분야 국가자격시험
+      </p>
+
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="위생사"
+      >
+        접수하기
+      </button>
+
+    </article>
+
+
+    <!-- 손해평가사 -->
+
+    <article
+      class="certificate-card available"
+      data-name="손해평가사"
+    >
+
+      <span class="certificate-type">
+        전문자격
+      </span>
+
+      <h3>
+        손해평가사
+      </h3>
+
+      <p>
+        농업재해 손해평가 전문자격
+      </p>
+
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="손해평가사"
+      >
+        접수하기
+      </button>
+
+    </article>
+
+
+    <!-- 공인중개사 -->
+
+    <article
+      class="certificate-card available"
+      data-name="공인중개사"
+    >
+
+      <span class="certificate-type">
+        전문자격
+      </span>
+
+      <h3>
+        공인중개사
+      </h3>
+
+      <p>
+        부동산 중개 전문자격
+      </p>
+
+      <button
+        type="button"
+        class="apply-button"
+        data-certificate="공인중개사"
+      >
+        접수하기
+      </button>
+
+    </article>
+
+
+  </div>
+
+
+  <p
+    id="no-result"
+    class="no-result"
+  >
+    검색 결과가 없습니다.
+  </p>
+
+</section>
+
+
+
+<!-- =========================
+     통합 접수 Form
+========================= -->
+
+<section
+  class="application-section"
+  id="application"
+>
+
+  <div class="form-wrapper">
+
+
+    <div class="form-heading">
+
+      <span class="section-number">
+        03
+      </span>
+
+      <h2>
+        자격증 시험 접수
+      </h2>
+
+      <p>
+        선택한 자격증에 맞는 접수 정보를 입력해주세요.
+      </p>
+
+    </div>
+
+
+
+    <!-- 선택한 자격증 -->
+
+    <div class="selected-exam">
+
+      <div>
+
+        <span>
+          선택한 자격증
+        </span>
+
         <strong id="selected-certificate-name">
           자격증을 먼저 선택해주세요
         </strong>
+
       </div>
 
+      <span id="selected-exam-type"></span>
 
-      <form id="application-form">
+    </div>
 
-        <input
-          type="hidden"
-          id="selected-certificate"
-          name="certificate"
+
+
+    <form id="application-form">
+
+
+      <input
+        type="hidden"
+        id="selected-certificate"
+        name="certificate"
+      >
+
+
+
+      <!-- =========================
+           국가기술자격
+      ========================== -->
+
+      <div
+        class="form-type-section"
+        id="national-form"
+        hidden
+      >
+
+
+        <div class="form-step">
+
+          <span>
+            STEP 1
+          </span>
+
+          <h3>
+            시험 정보
+          </h3>
+
+        </div>
+
+
+        <div class="auto-info-grid">
+
+          <div class="auto-info">
+
+            <span>
+              시험유형
+            </span>
+
+            <strong id="national-exam-type">
+              -
+            </strong>
+
+          </div>
+
+
+          <div class="auto-info">
+
+            <span>
+              시험구분
+            </span>
+
+            <strong>
+              필기
+            </strong>
+
+          </div>
+
+
+          <div class="auto-info">
+
+            <span>
+              등급
+            </span>
+
+            <strong>
+              기능사
+            </strong>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- 전기기능사 회차 -->
+
+        <div
+          class="form-group"
+          id="exam-round-group"
+          hidden
         >
+
+          <label for="exam-round">
+            시험 회차 <span>*</span>
+          </label>
+
+          <select id="exam-round">
+
+            <option value="">
+              회차를 선택해주세요
+            </option>
+
+            <option value="1">1회</option>
+            <option value="2">2회</option>
+            <option value="3">3회</option>
+            <option value="4">4회</option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- 시험지역 -->
+
+        <div class="form-group">
+
+          <label for="national-region">
+            시험지역 <span>*</span>
+          </label>
+
+          <select id="national-region">
+
+            <option value="">
+              지역을 선택해주세요
+            </option>
+
+            <option value="서울">서울</option>
+            <option value="부산">부산</option>
+            <option value="대구">대구</option>
+            <option value="인천">인천</option>
+            <option value="광주">광주</option>
+            <option value="대전">대전</option>
+            <option value="울산">울산</option>
+            <option value="세종">세종</option>
+            <option value="경기">경기</option>
+            <option value="강원">강원</option>
+            <option value="충북">충북</option>
+            <option value="충남">충남</option>
+            <option value="전북">전북</option>
+            <option value="전남">전남</option>
+            <option value="경북">경북</option>
+            <option value="경남">경남</option>
+            <option value="제주">제주</option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- 시험장 -->
+
+        <div class="form-group">
+
+          <label for="national-center">
+            시험장 <span>*</span>
+          </label>
+
+          <select
+            id="national-center"
+            disabled
+          >
+
+            <option value="">
+              시험지역을 먼저 선택해주세요
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- 시험일 -->
+
+        <div class="form-group">
+
+          <label for="national-date">
+            시험일 <span>*</span>
+          </label>
+
+          <select
+            id="national-date"
+            disabled
+          >
+
+            <option value="">
+              시험장을 먼저 선택해주세요
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- 시험시간 -->
+
+        <div class="form-group">
+
+          <label for="national-session">
+            시험시간 <span>*</span>
+          </label>
+
+          <select id="national-session">
+
+            <option value="">
+              시간을 선택해주세요
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="form-step">
+
+          <span>
+            STEP 2
+          </span>
+
+          <h3>
+            응시자격
+          </h3>
+
+        </div>
 
 
         <div class="form-group">
-          <label for="name">이름 <span>*</span></label>
+
+          <label for="national-eligibility">
+            응시자격유형 <span>*</span>
+          </label>
+
+          <select id="national-eligibility">
+
+            <option value="">
+              선택해주세요
+            </option>
+
+            <option value="제한없음">
+              제한없음
+            </option>
+
+            <option value="관련학과졸업">
+              관련학과졸업
+            </option>
+
+            <option value="경력">
+              경력
+            </option>
+
+            <option value="기타">
+              기타
+            </option>
+
+          </select>
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- =========================
+           전문자격
+      ========================== -->
+
+      <div
+        class="form-type-section"
+        id="professional-form"
+        hidden
+      >
+
+
+        <div class="form-step">
+
+          <span>
+            STEP 1
+          </span>
+
+          <h3>
+            시험 정보
+          </h3>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="professional-stage">
+            시험 차수 <span>*</span>
+          </label>
+
+          <select id="professional-stage">
+
+            <option value="">
+              차수를 선택해주세요
+            </option>
+
+            <option value="1차">
+              1차
+            </option>
+
+            <option value="2차">
+              2차
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- 2차 선택 시 표시 -->
+
+        <div
+          id="first-pass-fields"
+          hidden
+        >
+
+
+          <div class="form-group">
+
+            <label>
+              1차 합격 여부 <span>*</span>
+            </label>
+
+            <label class="checkbox-label">
+
+              <input
+                type="checkbox"
+                id="first-pass-holder"
+              >
+
+              1차 시험에 합격했습니다.
+
+            </label>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="first-pass-year">
+              1차 합격연도
+            </label>
+
+            <input
+              type="number"
+              id="first-pass-year"
+              placeholder="예: 2025"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="first-pass-number">
+              1차 합격번호
+            </label>
+
+            <input
+              type="text"
+              id="first-pass-number"
+              placeholder="합격번호를 입력해주세요"
+            >
+
+          </div>
+
+
+        </div>
+
+
+
+        <div class="subject-box">
+
+          <span>
+            시험과목
+          </span>
+
+          <div id="professional-subjects">
+            시험 차수를 선택하면 시험과목이 표시됩니다.
+          </div>
+
+        </div>
+
+
+
+        <div class="form-step">
+
+          <span>
+            STEP 2
+          </span>
+
+          <h3>
+            시험 장소 및 일정
+          </h3>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="professional-region">
+            시험지역 <span>*</span>
+          </label>
+
+          <select id="professional-region">
+
+            <option value="">
+              지역을 선택해주세요
+            </option>
+
+            <option value="서울">서울</option>
+            <option value="부산">부산</option>
+            <option value="대구">대구</option>
+            <option value="인천">인천</option>
+            <option value="광주">광주</option>
+            <option value="대전">대전</option>
+            <option value="울산">울산</option>
+            <option value="세종">세종</option>
+            <option value="경기">경기</option>
+            <option value="강원">강원</option>
+            <option value="충북">충북</option>
+            <option value="충남">충남</option>
+            <option value="전북">전북</option>
+            <option value="전남">전남</option>
+            <option value="경북">경북</option>
+            <option value="경남">경남</option>
+            <option value="제주">제주</option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="professional-center">
+            시험장 <span>*</span>
+          </label>
+
+          <select
+            id="professional-center"
+            disabled
+          >
+
+            <option value="">
+              시험지역을 먼저 선택해주세요
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="professional-date">
+            시험일 <span>*</span>
+          </label>
+
+          <select
+            id="professional-date"
+            disabled
+          >
+
+            <option value="">
+              시험장을 먼저 선택해주세요
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="professional-session">
+            시험시간 <span>*</span>
+          </label>
+
+          <select
+            id="professional-session"
+            disabled
+          >
+
+            <option value="">
+              시험 차수를 먼저 선택해주세요
+            </option>
+
+          </select>
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- =========================
+           보건자격
+      ========================== -->
+
+      <div
+        class="form-type-section"
+        id="health-form"
+        hidden
+      >
+
+
+        <div class="form-step">
+
+          <span>
+            STEP 1
+          </span>
+
+          <h3>
+            본인 인증
+          </h3>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="real-name-method">
+            실명인증 방식 <span>*</span>
+          </label>
+
+          <select id="real-name-method">
+
+            <option value="">
+              인증방식을 선택해주세요
+            </option>
+
+            <option value="휴대폰">
+              휴대폰
+            </option>
+
+            <option value="아이핀">
+              아이핀
+            </option>
+
+            <option value="공동인증서">
+              공동인증서
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="health-email">
+            이메일
+          </label>
+
+          <input
+            type="email"
+            id="health-email"
+            placeholder="example@email.com"
+          >
+
+        </div>
+
+
+
+        <div class="form-step">
+
+          <span>
+            STEP 2
+          </span>
+
+          <h3>
+            교육 정보
+          </h3>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="training-institution">
+            교육기관 <span>*</span>
+          </label>
+
+          <input
+            type="text"
+            id="training-institution"
+            placeholder="교육기관명을 입력해주세요"
+          >
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="training-completion-number">
+            교육수료번호 <span>*</span>
+          </label>
+
+          <input
+            type="text"
+            id="training-completion-number"
+            placeholder="교육수료번호를 입력해주세요"
+          >
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="training-date">
+            교육수료일 <span>*</span>
+          </label>
+
+          <input
+            type="date"
+            id="training-date"
+          >
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="training-hours">
+            교육시간
+          </label>
+
+          <input
+            type="number"
+            id="training-hours"
+            min="0"
+            placeholder="교육시간을 입력해주세요"
+          >
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="health-center">
+            시험센터 <span>*</span>
+          </label>
+
+          <select id="health-center">
+
+            <option value="">
+              센터를 선택해주세요
+            </option>
+
+            <option value="서울">서울</option>
+            <option value="부산">부산</option>
+            <option value="대구">대구</option>
+            <option value="광주">광주</option>
+            <option value="대전">대전</option>
+            <option value="수원">수원</option>
+            <option value="청주">청주</option>
+            <option value="전주">전주</option>
+            <option value="제주">제주</option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="health-time-slot">
+            시험시간 <span>*</span>
+          </label>
+
+          <select id="health-time-slot">
+
+            <option value="">
+              시간을 선택해주세요
+            </option>
+
+            <option value="AM">
+              오전 09:00
+            </option>
+
+            <option value="PM">
+              오후 14:00
+            </option>
+
+          </select>
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- =========================
+           공통 신청자 정보
+      ========================== -->
+
+      <div
+        id="common-fields"
+        hidden
+      >
+
+
+        <div class="form-step">
+
+          <span>
+            FINAL
+          </span>
+
+          <h3>
+            신청자 정보
+          </h3>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="name">
+            이름 <span>*</span>
+          </label>
 
           <input
             type="text"
             id="name"
-            name="name"
             placeholder="이름을 입력해주세요"
             required
           >
+
         </div>
 
 
+
         <div class="form-group">
-          <label for="phone">휴대전화 번호 <span>*</span></label>
+
+          <label for="phone">
+            휴대전화 번호 <span>*</span>
+          </label>
 
           <input
             type="tel"
             id="phone"
-            name="phone"
             placeholder="010-0000-0000"
             required
           >
+
         </div>
 
 
-        <div class="notice">
-          입력하신 정보는 자격증 접수 확인을 위해 사용됩니다.
+
+        <div class="form-step">
+
+          <span>
+            FINAL
+          </span>
+
+          <h3>
+            사진 및 결제
+          </h3>
+
         </div>
+
+
+
+        <div class="form-group">
+
+          <label for="photo">
+            증명사진 <span>*</span>
+          </label>
+
+          <input
+            type="file"
+            id="photo"
+            accept="image/*"
+          >
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="discount-type">
+            수수료 감면
+          </label>
+
+          <select id="discount-type">
+
+            <option value="없음">
+              없음
+            </option>
+
+            <option value="장애인">
+              장애인
+            </option>
+
+            <option value="기초생활수급자">
+              기초생활수급자
+            </option>
+
+            <option value="국가유공자">
+              국가유공자
+            </option>
+
+            <option value="차상위계층">
+              차상위계층
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <div class="fee-box">
+
+          <div>
+
+            <span>
+              응시 수수료
+            </span>
+
+            <strong id="original-fee">
+              -
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              최종 결제금액
+            </span>
+
+            <strong id="final-fee">
+              -
+            </strong>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="payment-method">
+            결제수단 <span>*</span>
+          </label>
+
+          <select id="payment-method">
+
+            <option value="">
+              결제수단을 선택해주세요
+            </option>
+
+            <option value="card">
+              신용카드
+            </option>
+
+            <option value="transfer">
+              계좌이체
+            </option>
+
+            <option value="virtual">
+              가상계좌
+            </option>
+
+          </select>
+
+        </div>
+
 
 
         <button
           type="submit"
-          class="submit-button">
+          class="submit-button"
+        >
           접수 신청하기
         </button>
 
-      </form>
 
-    </div>
+      </div>
 
-  </section>
+
+    </form>
+
+  </div>
+
+</section>
+
 
 </main>
 
 
-<!-- 접수 완료 -->
-<div class="modal" id="complete-modal">
+
+<!-- =========================
+     접수 완료
+========================= -->
+
+<div
+  class="modal"
+  id="complete-modal"
+>
 
   <div class="modal-content">
 
-    <div class="check-icon">✓</div>
+    <div class="check-icon">
+      ✓
+    </div>
 
-    <h2>접수가 완료되었습니다</h2>
+    <h2>
+      접수가 완료되었습니다
+    </h2>
 
     <p>
       신청하신 내용이 정상적으로 접수되었습니다.
     </p>
 
     <div class="complete-info">
-      <span>신청 자격증</span>
-      <strong id="complete-certificate"></strong>
+
+      <span>
+        신청 자격증
+      </span>
+
+      <strong id="complete-certificate">
+      </strong>
+
     </div>
 
     <button
       type="button"
-      id="close-modal">
+      id="close-modal"
+    >
       확인
     </button>
 
@@ -340,12 +1514,22 @@
 </div>
 
 
+
 <footer>
-  <strong>자격증 간편접수</strong>
-  <p>시니어를 위한 자격증 간편접수 서비스</p>
+
+  <strong>
+    자격증 간편접수
+  </strong>
+
+  <p>
+    시니어를 위한 자격증 간편접수 서비스
+  </p>
+
 </footer>
 
+
 <script src="script.js"></script>
+
 
 </body>
 </html>

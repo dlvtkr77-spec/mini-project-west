@@ -528,3 +528,315 @@ footer strong {
     width: 85px;
   }
 }
+/* =========================
+   통합 접수 Form
+========================= */
+
+.application-section {
+  padding: 60px 24px 100px;
+  background: #f6f7f9;
+}
+
+.form-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.form-heading {
+  margin-bottom: 28px;
+}
+
+.form-heading .section-number {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #666;
+}
+
+.form-heading h2 {
+  margin: 0 0 10px;
+  font-size: 32px;
+}
+
+.form-heading p {
+  margin: 0;
+  color: #666;
+  font-size: 17px;
+}
+
+
+/* 선택한 자격증 */
+
+.selected-exam {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  padding: 22px 24px;
+  margin-bottom: 24px;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+}
+
+.selected-exam div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.selected-exam span {
+  color: #666;
+  font-size: 14px;
+}
+
+.selected-exam strong {
+  font-size: 20px;
+}
+
+
+/* Form 전체 */
+
+#application-form {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.form-type-section {
+  width: 100%;
+}
+
+
+/* 단계 제목 */
+
+.form-step {
+  margin: 10px 0 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.form-step:not(:first-child) {
+  margin-top: 48px;
+}
+
+.form-step span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #666;
+}
+
+.form-step h3 {
+  margin: 0;
+  font-size: 23px;
+}
+
+
+/* 자동 표시 정보 */
+
+.auto-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.auto-info {
+  padding: 18px;
+  background: #f6f7f9;
+  border-radius: 10px;
+}
+
+.auto-info span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 13px;
+  color: #666;
+}
+
+.auto-info strong {
+  font-size: 17px;
+}
+
+
+/* 입력 항목 */
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group > label:first-child {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.form-group label span {
+  color: #d93025;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 15px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #cfcfcf;
+  border-radius: 9px;
+
+  background: #fff;
+  font-size: 16px;
+}
+
+.form-group input[type="file"] {
+  padding: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: 2px solid #222;
+  outline-offset: 1px;
+}
+
+.form-group select:disabled {
+  background: #f1f1f1;
+  color: #888;
+}
+
+
+/* 체크박스 */
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 16px;
+
+  border: 1px solid #ddd;
+  border-radius: 9px;
+}
+
+.checkbox-label input {
+  width: 20px;
+  min-height: auto;
+  height: 20px;
+}
+
+
+/* 시험과목 */
+
+.subject-box {
+  padding: 20px;
+  margin-bottom: 24px;
+
+  background: #f6f7f9;
+  border-radius: 10px;
+}
+
+.subject-box > span {
+  display: block;
+  margin-bottom: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+  color: #555;
+}
+
+#professional-subjects {
+  line-height: 1.7;
+}
+
+
+/* 수수료 */
+
+.fee-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  padding: 20px;
+  margin: 30px 0 24px;
+
+  background: #f6f7f9;
+  border-radius: 10px;
+}
+
+.fee-box div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fee-box span {
+  font-size: 14px;
+  color: #666;
+}
+
+.fee-box strong {
+  font-size: 21px;
+}
+
+
+/* 접수 버튼 */
+
+.submit-button {
+  width: 100%;
+  min-height: 60px;
+  margin-top: 14px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: #222;
+  color: #fff;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background: #000;
+}
+
+
+/* 모바일 */
+
+@media (max-width: 700px) {
+
+  .application-section {
+    padding: 40px 16px 70px;
+  }
+
+  #application-form {
+    padding: 22px 18px;
+  }
+
+  .form-heading h2 {
+    font-size: 27px;
+  }
+
+  .auto-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fee-box {
+    grid-template-columns: 1fr;
+  }
+
+  .selected-exam {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
