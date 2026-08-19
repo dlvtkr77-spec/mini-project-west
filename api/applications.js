@@ -214,7 +214,7 @@ export default async function handler(req, res) {
             "application/json",
 
           "Prefer":
-            "return=representation"
+            "return=minimal"
         },
 
         body: JSON.stringify(payload)
@@ -223,8 +223,9 @@ export default async function handler(req, res) {
 
 
     const result =
-      await response.json();
-
+      response.ok
+    ? null
+    : await response.json();
 
     /* Supabase 오류 */
     if (!response.ok) {
@@ -244,10 +245,9 @@ export default async function handler(req, res) {
 
     /* 성공 */
     return res.status(201).json({
-      success: true,
-      message: "접수가 완료되었습니다.",
-      data: result
-    });
+  success: true,
+  message: "접수가 완료되었습니다."
+});
 
 
   } catch (error) {
