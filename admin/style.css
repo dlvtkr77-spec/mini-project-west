@@ -1,41 +1,518 @@
+/* =========================
+   기본
+========================= */
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7f6;
-    color: #333;
+  background: #f5f6f8;
+  color: #182033;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Pretendard",
+    "Segoe UI",
+    sans-serif;
 }
 
-.admin-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+button,
+input,
+select {
+  font: inherit;
 }
 
-header {
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+
+/* =========================
+   사이드바
+========================= */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 250px;
+  height: 100vh;
+
+  padding: 28px 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #172033;
+  color: #fff;
 }
 
-header h1 {
-    font-size: 24px;
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 0 6px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.logo-mark {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #fff;
+  color: #172033;
+
+  font-size: 18px;
+  font-weight: 800;
 }
 
-.card h2 {
-    margin-bottom: 10px;
-    color: #2c3e50;
+.sidebar-logo strong {
+  display: block;
+  font-size: 16px;
+}
+
+.sidebar-logo p {
+  margin: 4px 0 0;
+
+  color: #9ba5b8;
+  font-size: 13px;
+}
+
+.sidebar-nav {
+  margin-top: 28px;
+}
+
+.nav-item {
+  width: 100%;
+
+  padding: 14px 16px;
+
+  border: 0;
+  border-radius: 9px;
+
+  text-align: left;
+
+  background: transparent;
+  color: #b7c0d0;
+
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+.sidebar-bottom a {
+  display: block;
+
+  padding: 14px 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9px;
+
+  color: #d6dce7;
+  text-decoration: none;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   메인
+========================= */
+
+.admin-main {
+  min-height: 100vh;
+
+  margin-left: 250px;
+  padding: 46px;
+}
+
+.admin-header {
+  max-width: 1500px;
+  margin: 0 auto 30px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+
+  color: #778196;
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.admin-header h1 {
+  margin: 0;
+
+  font-size: 34px;
+  letter-spacing: -0.04em;
+}
+
+.header-description {
+  margin: 9px 0 0;
+
+  color: #737d90;
+  font-size: 15px;
+}
+
+.refresh-button {
+  padding: 11px 18px;
+
+  border: 1px solid #d7dbe2;
+  border-radius: 9px;
+
+  background: #fff;
+  color: #263044;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.refresh-button:hover {
+  background: #f0f2f5;
+}
+
+
+/* =========================
+   요약 카드
+========================= */
+
+.summary-grid {
+  max-width: 1500px;
+  margin: 0 auto 24px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.summary-card {
+  padding: 23px;
+
+  border: 1px solid #e1e4e9;
+  border-radius: 13px;
+
+  background: #fff;
+}
+
+.summary-card span {
+  color: #6e788a;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.summary-card strong {
+  display: block;
+
+  margin-top: 13px;
+
+  color: #182033;
+
+  font-size: 31px;
+  line-height: 1;
+}
+
+.summary-card p {
+  margin: 10px 0 0;
+
+  color: #9aa2b0;
+  font-size: 13px;
+}
+
+
+/* =========================
+   접수 목록 패널
+========================= */
+
+.application-panel {
+  max-width: 1500px;
+  margin: 0 auto;
+
+  padding: 28px;
+
+  border: 1px solid #e1e4e9;
+  border-radius: 14px;
+
+  background: #fff;
+}
+
+.panel-heading {
+  margin-bottom: 23px;
+}
+
+.panel-heading h2 {
+  margin: 0;
+
+  font-size: 21px;
+}
+
+.panel-heading p {
+  margin: 7px 0 0;
+
+  color: #858e9e;
+  font-size: 14px;
+}
+
+
+/* =========================
+   검색 / 필터
+========================= */
+
+.filter-bar {
+  display: grid;
+
+  grid-template-columns:
+    minmax(260px, 1fr)
+    190px
+    160px;
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+.search-box input,
+.filter-bar select {
+  width: 100%;
+  height: 45px;
+
+  padding: 0 13px;
+
+  border: 1px solid #d9dde4;
+  border-radius: 8px;
+
+  background: #fff;
+  color: #222b3d;
+
+  outline: none;
+}
+
+.search-box input:focus,
+.filter-bar select:focus {
+  border-color: #75819a;
+}
+
+
+/* =========================
+   테이블
+========================= */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  min-width: 1100px;
+
+  border-collapse: collapse;
+
+  background: #fff;
+}
+
+thead {
+  background: #f6f7f9;
+}
+
+th {
+  padding: 14px 15px;
+
+  border-bottom: 1px solid #e4e7ec;
+
+  color: #626d80;
+
+  text-align: left;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+td {
+  padding: 16px 15px;
+
+  border-bottom: 1px solid #eceef2;
+
+  color: #313a4c;
+
+  font-size: 14px;
+
+  white-space: nowrap;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover {
+  background: #fafbfc;
+}
+
+.loading-cell {
+  padding: 55px;
+
+  color: #8a93a3;
+  text-align: center;
+}
+
+
+/* =========================
+   상태 표시
+========================= */
+
+.status-badge {
+  display: inline-flex;
+
+  padding: 6px 9px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.status-complete {
+  background: #eaf7ef;
+  color: #28734a;
+}
+
+.status-wait {
+  background: #fff5dd;
+  color: #8c6714;
+}
+
+.status-cancel {
+  background: #fdecec;
+  color: #a83d3d;
+}
+
+
+/* =========================
+   결과 없음
+========================= */
+
+.empty-state {
+  padding: 60px 20px;
+
+  text-align: center;
+}
+
+.empty-state strong {
+  display: block;
+
+  font-size: 17px;
+}
+
+.empty-state p {
+  margin: 8px 0 0;
+
+  color: #8a93a3;
+  font-size: 14px;
+}
+
+
+/* =========================
+   모바일
+========================= */
+
+@media (max-width: 1050px) {
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .search-box {
+    grid-column: 1 / -1;
+  }
+}
+
+
+@media (max-width: 720px) {
+
+  .sidebar {
+    position: static;
+
+    width: 100%;
+    height: auto;
+
+    padding: 18px;
+  }
+
+  .sidebar-nav {
+    margin-top: 15px;
+  }
+
+  .sidebar-bottom {
+    margin-top: 15px;
+  }
+
+  .admin-main {
+    margin-left: 0;
+    padding: 25px 16px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .application-panel {
+    padding: 19px;
+  }
+
+  .filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .search-box {
+    grid-column: auto;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
 }
