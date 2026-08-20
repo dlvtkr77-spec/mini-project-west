@@ -47,6 +47,40 @@ function normalizeQuestion(question) {
 }
 
 
+function findRequestedCert(question, faqs) {
+  const normalized = normalizeQuestion(question);
+
+  const certs = [
+    ...new Set(
+      faqs
+        .map(faq => String(faq.cert || "").toLowerCase())
+        .filter(Boolean)
+    )
+  ];
+
+  return certs
+    .sort((a, b) => b.length - a.length)
+    .find(cert => normalized.includes(cert)) || null;
+}
+
+
+function findRequestedCategory(question, faqs) {
+  const normalized = normalizeQuestion(question);
+
+  const categories = [
+    ...new Set(
+      faqs
+        .map(faq => String(faq.category || "").toLowerCase())
+        .filter(Boolean)
+    )
+  ];
+
+  return categories
+    .sort((a, b) => b.length - a.length)
+    .find(category => normalized.includes(category)) || null;
+}
+
+
 function isCertificationQuestion(question, faqs) {
   const normalized = normalizeQuestion(question);
 
@@ -72,20 +106,54 @@ function isCertificationQuestion(question, faqs) {
     word => normalized.includes(word)
   );
 
-  const hasCertificationName = faqs.some(faq => {
-    const cert = String(faq.cert || "").toLowerCase();
+  const requestedCert = findRequestedCert(question, faqs);
 
-    return cert && normalized.includes(cert);
-  });
-
-  return hasCertificationWord || hasCertificationName;
+  return hasCertificationWord || Boolean(requestedCert);
 }
 
 
 function retrieve(question, faqs, topK = 3) {
   const normalized = normalizeQuestion(question);
 
-  const ranked = faqs.map(faq => {
+  const requestedCert = findRequestedCert(
+    question,
+    faqs
+  );
+
+  const requestedCategory = findRequestedCategory(
+    question,
+    faqs
+  );
+
+  let candidates = faqs;
+
+  // 자격증명이 확인되면 다른 자격증 FAQ는 검색에서 제외
+  if (requestedCert) {
+    candidates = candidates.filter(
+      faq =>
+        String(faq.cert || "").toLowerCase() === requestedCert
+    );
+  }
+
+  // 자격증 + 질문 유형이 모두 확인되면 둘 다 일치하는 FAQ 우선
+  if (requestedCategory) {
+    const exactCategory = candidates.filter(
+      faq =>
+        String(faq.category || "").toLowerCase() ===
+        requestedCategory
+    );
+
+    if (exactCategory.length > 0) {
+      candidates = exactCategory;
+    }
+  }
+
+  const keywords = normalized
+    .replace(/[?!.,"']/g, " ")
+    .split(/\s+/)
+    .filter(word => word.length >= 2);
+
+  const ranked = candidates.map(faq => {
     const cert = String(faq.cert || "").toLowerCase();
     const category = String(faq.category || "").toLowerCase();
     const title = String(faq.title || "").toLowerCase();
@@ -94,18 +162,16 @@ function retrieve(question, faqs, topK = 3) {
 
     let score = 0;
 
-    if (cert && normalized.includes(cert)) {
+    if (requestedCert && cert === requestedCert) {
       score += 10;
     }
 
-    if (category && normalized.includes(category)) {
-      score += 5;
+    if (
+      requestedCategory &&
+      category === requestedCategory
+    ) {
+      score += 10;
     }
-
-    const keywords = normalized
-      .replace(/[?!.,"']/g, " ")
-      .split(/\s+/)
-      .filter(word => word.length >= 2);
 
     for (const keyword of keywords) {
       if (title.includes(keyword)) {
@@ -165,22 +231,42 @@ export default async function handler(req, res) {
 
   try {
     const faqs = loadFaqs();
+    const question = message.trim();
 
-    // 자격증 시험 접수와 관계없는 질문 차단
-    if (!isCertificationQuestion(message.trim(), faqs)) {
+    // 자격증 시험과 관계없는 질문
+    if (!isCertificationQuestion(question, faqs)) {
       return res.status(200).json({
         status: "OUT_OF_SCOPE",
-        answer: "자격증 시험 접수와 관련된 질문을 해주세요.",
+        answer:
+          "자격증 시험 접수와 관련된 질문을 해주세요.",
+        source: "없음"
+      });
+    }
+
+    const requestedCert = findRequestedCert(
+      question,
+      faqs
+    );
+
+    /*
+      시험 관련 표현은 있지만 데이터에 존재하는
+      자격증명을 찾지 못한 경우
+      예: 미용사 시험비
+    */
+    if (!requestedCert) {
+      return res.status(200).json({
+        status: "NOT_FOUND",
+        answer:
+          "해당 자격증에 대한 안내 정보를 찾지 못했습니다. 지원하는 자격증의 시험 접수 관련 내용을 질문해주세요.",
         source: "없음"
       });
     }
 
     const results = retrieve(
-      message.trim(),
+      question,
       faqs
     );
 
-    // 접수 관련 질문이지만 FAQ에서 근거를 찾지 못한 경우
     if (results.length === 0) {
       return res.status(200).json({
         status: "NOT_FOUND",
@@ -221,7 +307,7 @@ FAQ에서 사용자의 질문에 대한 정보를 확인할 수 없다면
 ${context}
 
 [사용자 질문]
-${message.trim()}
+${question}
     `.trim();
 
     const response = await fetch(
@@ -249,7 +335,10 @@ ${message.trim()}
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini API error:", data);
+      console.error(
+        "Gemini API error:",
+        data
+      );
 
       return res.status(response.status).json({
         error:
@@ -273,7 +362,10 @@ ${message.trim()}
     });
 
   } catch (error) {
-    console.error("Chat API error:", error);
+    console.error(
+      "Chat API error:",
+      error
+    );
 
     return res.status(500).json({
       error:
