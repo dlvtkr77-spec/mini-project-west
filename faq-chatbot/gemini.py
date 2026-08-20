@@ -3,6 +3,9 @@ import os
 import urllib.request
 import urllib.error
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def ask_gemini(prompt):
     api_key = os.getenv("GOOGLE_API_KEY")
@@ -10,7 +13,7 @@ def ask_gemini(prompt):
     if not api_key:
         raise RuntimeError("GOOGLE_API_KEY가 설정되지 않았습니다.")
 
-  model = "gemini-3.5-flash-lite"
+    model = "gemini-3.5-flash-lite"
 
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
