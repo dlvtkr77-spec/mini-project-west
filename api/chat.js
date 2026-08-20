@@ -47,6 +47,41 @@ function normalizeQuestion(question) {
 }
 
 
+function isCertificationQuestion(question, faqs) {
+  const normalized = normalizeQuestion(question);
+
+  const certificationWords = [
+    "자격증",
+    "시험",
+    "접수",
+    "응시",
+    "응시료",
+    "합격",
+    "시험장",
+    "수험표",
+    "환불",
+    "취소",
+    "준비물",
+    "필기",
+    "실기",
+    "큐넷",
+    "국시원"
+  ];
+
+  const hasCertificationWord = certificationWords.some(
+    word => normalized.includes(word)
+  );
+
+  const hasCertificationName = faqs.some(faq => {
+    const cert = String(faq.cert || "").toLowerCase();
+
+    return cert && normalized.includes(cert);
+  });
+
+  return hasCertificationWord || hasCertificationName;
+}
+
+
 function retrieve(question, faqs, topK = 3) {
   const normalized = normalizeQuestion(question);
 
@@ -59,17 +94,14 @@ function retrieve(question, faqs, topK = 3) {
 
     let score = 0;
 
-    // 자격증명이 질문에 포함되면 가장 높은 점수
     if (cert && normalized.includes(cert)) {
       score += 10;
     }
 
-    // 질문 유형이 일치하면 높은 점수
     if (category && normalized.includes(category)) {
       score += 5;
     }
 
-    // 질문에 포함된 표현과 FAQ 내용 비교
     const keywords = normalized
       .replace(/[?!.,"']/g, " ")
       .split(/\s+/)
@@ -134,15 +166,26 @@ export default async function handler(req, res) {
   try {
     const faqs = loadFaqs();
 
+    // 자격증 시험 접수와 관계없는 질문 차단
+    if (!isCertificationQuestion(message.trim(), faqs)) {
+      return res.status(200).json({
+        status: "OUT_OF_SCOPE",
+        answer: "자격증 시험 접수와 관련된 질문을 해주세요.",
+        source: "없음"
+      });
+    }
+
     const results = retrieve(
       message.trim(),
       faqs
     );
 
+    // 접수 관련 질문이지만 FAQ에서 근거를 찾지 못한 경우
     if (results.length === 0) {
       return res.status(200).json({
         status: "NOT_FOUND",
-        answer: "해당 자격증에 대한 안내 정보를 찾지 못했습니다. 지원하는 자격증의 시험 접수 관련 내용을 질문해주세요.",
+        answer:
+          "해당 자격증에 대한 안내 정보를 찾지 못했습니다. 지원하는 자격증의 시험 접수 관련 내용을 질문해주세요.",
         source: "없음"
       });
     }
@@ -206,10 +249,7 @@ ${message.trim()}
     const data = await response.json();
 
     if (!response.ok) {
-      console.error(
-        "Gemini API error:",
-        data
-      );
+      console.error("Gemini API error:", data);
 
       return res.status(response.status).json({
         error:
@@ -233,10 +273,7 @@ ${message.trim()}
     });
 
   } catch (error) {
-    console.error(
-      "Chat API error:",
-      error
-    );
+    console.error("Chat API error:", error);
 
     return res.status(500).json({
       error:
