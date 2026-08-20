@@ -142,7 +142,7 @@ export default async function handler(req, res) {
     if (results.length === 0) {
       return res.status(200).json({
         status: "NOT_FOUND",
-        answer: "FAQ에서 확인할 수 없는 내용입니다.",
+        answer: "해당 자격증에 대한 안내 정보를 찾지 못했습니다. 지원하는 자격증의 시험 접수 관련 내용을 질문해주세요.",
         source: "없음"
       });
     }
@@ -171,7 +171,7 @@ FAQ에 없는 내용은 추측하지 마세요.
 사용자가 물어본 자격증과 다른 자격증의 정보는 답변하지 마세요.
 
 FAQ에서 사용자의 질문에 대한 정보를 확인할 수 없다면
-"FAQ에서 확인할 수 없는 내용입니다."
+"해당 자격증에 대한 안내 정보를 찾지 못했습니다. 지원하는 자격증의 시험 접수 관련 내용을 질문해주세요."
 라고만 답변하세요.
 
 [FAQ]
