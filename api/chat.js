@@ -45,9 +45,44 @@ function normalizeQuestion(question) {
   return result;
 }
 function tokenize(text) {
-  return String(text || "")
+  const cleaned = String(text || "")
     .toLowerCase()
-    .match(/[가-힣a-z0-9]+/g) || [];
+    .replace(/[?!.,"']/g, " ");
+
+  const words = cleaned.match(/[가-힣a-z0-9]+/g) || [];
+
+  const particles = [
+    "에서",
+    "으로",
+    "에게",
+    "까지",
+    "부터",
+    "하고",
+    "이랑",
+    "랑",
+    "은",
+    "는",
+    "이",
+    "가",
+    "을",
+    "를",
+    "에",
+    "도",
+    "만"
+  ];
+
+  return words.map(word => {
+    for (const particle of particles) {
+      if (
+        word.endsWith(particle) &&
+        word.length > particle.length
+      ) {
+        return word.slice(0, -particle.length);
+      }
+    }
+
+    return word;
+  });
 }
 
 function retrieve(question, faqs, topK = 3) {
