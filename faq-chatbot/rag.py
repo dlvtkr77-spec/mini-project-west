@@ -12,6 +12,10 @@ DATA_PATH = ROOT / "faq_combined.jsonl"
 SYNONYMS_PATH = ROOT / "synonyms.json"
 
 
+# -------------------------
+# FAQ 불러오기 / 저장
+# -------------------------
+
 def load_faqs():
     faqs = []
 
@@ -37,6 +41,10 @@ def save_faqs(faqs):
             )
 
 
+# -------------------------
+# 동의어
+# -------------------------
+
 def load_synonyms():
     if not SYNONYMS_PATH.exists():
         return {}
@@ -56,6 +64,10 @@ def expand_question(question):
 
     return expanded
 
+
+# -------------------------
+# 검색 문서 생성
+# -------------------------
 
 def make_document(faq):
     return " ".join(
@@ -96,8 +108,146 @@ def rebuild_index():
 rebuild_index()
 
 
+# -------------------------
+# 자격증명 인식
+# -------------------------
+
+def make_cert_variations(cert):
+    """
+    정식 자격증명에서 사용자가 입력할 법한
+    짧은 이름들을 자동으로 만든다.
+
+    예:
+    굴착기운전기능사 -> 굴착기운전기능사, 굴착기운전, 굴착기
+    한식조리기능사 -> 한식조리기능사, 한식조리, 한식
+    지게차운전기능사 -> 지게차운전기능사, 지게차운전, 지게차
+    """
+
+    cert = cert.strip()
+
+    variations = {cert}
+
+    suffixes = [
+        "산업기사",
+        "운전기능사",
+        "기능사",
+        "기사",
+        "기능장",
+        "기술사",
+    ]
+
+    for suffix in suffixes:
+        if cert.endswith(suffix):
+            short = cert[:-len(suffix)].strip()
+
+            if len(short) >= 2:
+                variations.add(short)
+
+    # '운전' 제거
+    for variation in list(variations):
+        if variation.endswith("운전"):
+            short = variation[:-2].strip()
+
+            if len(short) >= 2:
+                variations.add(short)
+
+    # '조리' 제거
+    for variation in list(variations):
+        if variation.endswith("조리"):
+            short = variation[:-2].strip()
+
+            if len(short) >= 2:
+                variations.add(short)
+
+    return sorted(
+        variations,
+        key=len,
+        reverse=True
+    )
+
+
+def find_cert(question):
+    """
+    사용자의 질문에 어떤 자격증이 포함되어 있는지 찾는다.
+    FAQ에 실제 등록된 자격증을 기준으로 자동 동작한다.
+    """
+
+    expanded_question = expand_question(question).strip()
+
+    certs = {
+        faq.get("cert", "").strip()
+        for faq in FAQ
+        if faq.get("cert", "").strip()
+    }
+
+    matches = []
+
+    for cert in certs:
+        variations = make_cert_variations(cert)
+
+        for variation in variations:
+            if variation in expanded_question:
+                matches.append(
+                    (
+                        len(variation),
+                        cert,
+                        variation,
+                    )
+                )
+
+    if not matches:
+        return None
+
+    # 가장 구체적으로 일치한 자격증 우선
+    matches.sort(
+        key=lambda x: x[0],
+        reverse=True
+    )
+
+    return matches[0][1]
+
+
+def is_cert_only_question(question, cert):
+    """
+    사용자가 자격증 이름만 입력했는지 확인한다.
+
+    예:
+    굴착기
+    지게차
+    한식
+    한식조리
+    """
+
+    expanded_question = expand_question(question).strip()
+
+    variations = make_cert_variations(cert)
+
+    return expanded_question in variations
+
+
+# -------------------------
+# FAQ 검색
+# -------------------------
+
 def retrieve(question, top_k=1, min_score=0.2):
     expanded_question = expand_question(question)
+
+    # 먼저 자격증을 인식
+    detected_cert = find_cert(expanded_question)
+
+    # 자격증이 인식되면
+    # 해당 자격증 FAQ 안에서만 검색
+    if detected_cert:
+        candidate_indices = [
+            index
+            for index, faq in enumerate(FAQ)
+            if faq.get("cert", "").strip() == detected_cert
+        ]
+
+    else:
+        candidate_indices = list(
+            range(len(FAQ))
+        )
 
     question_vector = VECTORIZER.transform(
         [expanded_question]
@@ -108,16 +258,19 @@ def retrieve(question, top_k=1, min_score=0.2):
         FAQ_MATRIX
     )[0]
 
-    ranked_indices = similarities.argsort()[::-1]
+    ranked_indices = sorted(
+        candidate_indices,
+        key=lambda index: similarities[index],
+        reverse=True,
+    )
 
     results = []
 
     for index in ranked_indices:
         score = similarities[index]
 
-
         if score < min_score:
-            break
+            continue
 
         results.append(
             (score, FAQ[index])
@@ -128,6 +281,10 @@ def retrieve(question, top_k=1, min_score=0.2):
 
     return results
 
+
+# -------------------------
+# FAQ 추가
+# -------------------------
 
 def add_faq_entry(cert, title, body, keywords):
     faqs = load_faqs()
@@ -174,6 +331,10 @@ def add_faq_entry(cert, title, body, keywords):
     return new_faq
 
 
+# -------------------------
+# FAQ 삭제
+# -------------------------
+
 def delete_faq_entry(faq_id):
     faqs = load_faqs()
 
@@ -201,6 +362,10 @@ def get_faq_list():
     return load_faqs()
 
 
+# -------------------------
+# Gemini 프롬프트
+# -------------------------
+
 def build_prompt(question, results):
     context = "\n\n".join(
         f"[FAQ {i + 1}]\n"
@@ -218,6 +383,7 @@ def build_prompt(question, results):
 아래 FAQ 내용만 근거로 사용해서 사용자의 질문에 답해라.
 FAQ에서 확인할 수 없는 내용은 추측하지 마라.
 질문과 직접 관련된 FAQ를 우선해서 답변해라.
+다른 자격증의 정보를 섞어서 답변하지 마라.
 답변은 이해하기 쉽게 간결하게 작성해라.
 
 [FAQ]
@@ -228,16 +394,61 @@ FAQ에서 확인할 수 없는 내용은 추측하지 마라.
 """.strip()
 
 
-def answer_question(question):
-    results = retrieve(question)
+# -------------------------
+# 최종 답변
+# -------------------------
 
-    if not results:
+def answer_question(question):
+    question = question.strip()
+
+    if not question:
         return {
             "status": "NOT_FOUND",
-            "answer": "FAQ에서 확인할 수 없는 내용입니다.",
+            "answer": "질문을 입력해주세요.",
             "source": "없음",
         }
 
+    # 자격증 인식
+    detected_cert = find_cert(question)
+
+    # 자격증 이름만 입력한 경우
+    if detected_cert and is_cert_only_question(
+        question,
+        detected_cert
+    ):
+        return {
+            "status": "NOT_FOUND",
+            "answer": (
+                f"{detected_cert}에 대해 어떤 정보가 궁금하신가요? "
+                "시험비, 접수 방법, 시험 일정 등 궁금한 내용을 질문해주세요."
+            ),
+            "source": "없음",
+        }
+
+    # FAQ 검색
+    results = retrieve(question)
+
+    if not results:
+        if detected_cert:
+            return {
+                "status": "NOT_FOUND",
+                "answer": (
+                    f"{detected_cert}에 대한 질문은 인식했지만, "
+                    "해당 내용은 FAQ에서 확인할 수 없습니다."
+                ),
+                "source": "없음",
+            }
+
+        return {
+            "status": "NOT_FOUND",
+            "answer": (
+                "해당 자격증에 대한 안내 정보를 찾지 못했습니다. "
+                "지원하는 자격증의 시험 접수 관련 내용을 질문해주세요."
+            ),
+            "source": "없음",
+        }
+
+    # Gemini 답변 생성
     prompt = build_prompt(
         question,
         results
