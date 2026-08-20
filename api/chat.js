@@ -1,15 +1,120 @@
+import fs from "fs";
+import path from "path";
+
+function loadFaqs() {
+  const filePath = path.join(
+    process.cwd(),
+    "data",
+    "faq_combined.jsonl"
+  );
+
+  const text = fs.readFileSync(filePath, "utf-8");
+
+  return text
+    .split("\n")
+    .filter(line => line.trim())
+    .map(line => JSON.parse(line));
+}
+
+function normalizeQuestion(question) {
+  const synonyms = {
+    "한식조리기능사": "한식조리",
+    "지게차운전기능사": "지게차",
+    "굴착기운전기능사": "굴착기",
+    "전기기능사": "전기"
+  };
+
+  let result = question;
+
+  for (const [from, to] of Object.entries(synonyms)) {
+    result = result.replaceAll(from, to);
+  }
+
+  return result;
+}
+
+function tokenize(text) {
+  return String(text || "")
+    .toLowerCase()
+    .match(/[가-힣a-z0-9]+/g) || [];
+}
+
+function retrieve(question, faqs, topK = 3) {
+  const normalized = normalizeQuestion(question);
+  const questionTokens = new Set(tokenize(normalized));
+
+  const ranked = faqs.map(faq => {
+    const cert = String(faq.cert || "");
+    const category = String(faq.category || "");
+
+    const document = [
+      cert,
+      category,
+      faq.title,
+      faq.body,
+      faq.reply
+    ].join(" ");
+
+    const documentTokens = new Set(tokenize(document));
+
+    let overlap = 0;
+
+    for (const token of questionTokens) {
+      if (documentTokens.has(token)) {
+        overlap += 1;
+      }
+    }
+
+    let score = overlap;
+
+    if (
+      cert &&
+      normalized.toLowerCase().includes(cert.toLowerCase())
+    ) {
+      score += 5;
+    }
+
+    if (
+      category &&
+      normalized.toLowerCase().includes(category.toLowerCase())
+    ) {
+      score += 2;
+    }
+
+    return {
+      score,
+      faq
+    };
+  });
+
+  return ranked
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, topK);
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
   }
 
   const { message } = req.body;
 
-  if (!message || typeof message !== "string" || message.trim() === "") {
-    return res.status(400).json({ error: "메시지가 비어 있습니다." });
+  if (
+    !message ||
+    typeof message !== "string" ||
+    message.trim() === ""
+  ) {
+    return res.status(400).json({
+      error: "메시지가 비어 있습니다."
+    });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey =
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_API_KEY;
 
   if (!apiKey) {
     return res.status(500).json({
@@ -17,27 +122,55 @@ export default async function handler(req, res) {
     });
   }
 
-  const systemInstruction = `
-당신은 자격증 시험 간편접수 웹사이트의 친절한 자격증 접수 도우미 챗봇입니다.
-시니어 사용자도 쉽게 이해할 수 있도록 친절하고 명확하게 답변해주세요.
-
-[지원 자격증 목록]
-- 한식조리기능사
-- 지게차운전기능사
-- 굴착기운전기능사
-- 전기기능사
-- 손해평가사
-- 공인중개사
-- 요양보호사
-- 위생사
-
-[답변 범위 및 규칙]
-- 자격증 시험 접수 방법, 응시료, 시험 일정, 시험 장소, 응시 자격, 시험 준비물, 접수 변경 및 취소, 수수료 감면, 사이트 이용 방법 등 자격증 시험 접수와 관련된 질문에만 답변합니다.
-- 자격증 시험 접수와 관련 없는 질문에는 임의로 답변하지 말고 정확히 다음 문장으로만 안내하세요:
-"자격증 시험 접수와 관련된 질문을 해주세요."
-`;
-
   try {
+    const faqs = loadFaqs();
+
+    const results = retrieve(
+      message.trim(),
+      faqs
+    );
+
+    if (results.length === 0) {
+      return res.status(200).json({
+        answer:
+          "FAQ에서 확인할 수 없는 내용입니다.",
+        source: "없음",
+        status: "NOT_FOUND"
+      });
+    }
+
+    const context = results
+      .map(({ faq }, index) => {
+        return `
+[FAQ ${index + 1}]
+자격증: ${faq.cert || ""}
+분류: ${faq.category || ""}
+제목: ${faq.title || ""}
+질문: ${faq.body || ""}
+답변: ${faq.reply || ""}
+        `.trim();
+      })
+      .join("\n\n");
+
+    const prompt = `
+당신은 자격증 시험 접수 안내 챗봇입니다.
+
+반드시 아래 FAQ 내용만 근거로 답변하세요.
+FAQ에 없는 내용은 추측하지 마세요.
+사용자의 질문과 직접 관련된 내용만 답변하세요.
+시니어 사용자도 이해하기 쉽게 간결하게 답변하세요.
+
+FAQ에서 질문에 대한 정보를 확인할 수 없다면
+"FAQ에서 확인할 수 없는 내용입니다."
+라고 답변하세요.
+
+[FAQ]
+${context}
+
+[사용자 질문]
+${message.trim()}
+    `.trim();
+
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`,
       {
@@ -50,8 +183,9 @@ export default async function handler(req, res) {
             {
               role: "user",
               parts: [
-                { text: systemInstruction },
-                { text: message.trim() }
+                {
+                  text: prompt
+                }
               ]
             }
           ]
@@ -62,22 +196,41 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini API error:", data);
+      console.error(
+        "Gemini API error:",
+        data
+      );
+
       return res.status(response.status).json({
-        error: "답변을 불러오지 못했습니다. 잠시 후 다시 시도해주세요."
+        error:
+          "답변을 불러오지 못했습니다. 잠시 후 다시 시도해주세요."
       });
     }
 
     const answer =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "답변을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.";
+      "답변을 불러오지 못했습니다.";
 
-    return res.status(200).json({ answer });
+    const source = results
+      .map(item => item.faq.title)
+      .filter(Boolean)
+      .join(", ");
+
+    return res.status(200).json({
+      status: "FOUND",
+      answer,
+      source
+    });
 
   } catch (error) {
-    console.error("Chat API error:", error);
+    console.error(
+      "Chat API error:",
+      error
+    );
+
     return res.status(500).json({
-      error: "답변을 불러오지 못했습니다. 잠시 후 다시 시도해주세요."
+      error:
+        "답변을 불러오지 못했습니다. 잠시 후 다시 시도해주세요."
     });
   }
 }

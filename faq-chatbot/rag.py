@@ -1,19 +1,40 @@
 import json
-import re
 from pathlib import Path
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from gemini import ask_gemini
 
 
 ROOT = Path(__file__).parent
-FAQ_PATH = ROOT / "faq.json"
+DATA_PATH = ROOT / "faq_combined.jsonl"
 SYNONYMS_PATH = ROOT / "synonyms.json"
 
 
 def load_faqs():
-    return json.loads(
-        FAQ_PATH.read_text(encoding="utf-8")
-    )
+    faqs = []
+
+    with DATA_PATH.open("r", encoding="utf-8") as file:
+        for line in file:
+            line = line.strip()
+
+            if line:
+                faqs.append(json.loads(line))
+
+    return faqs
+
+
+def save_faqs(faqs):
+    with DATA_PATH.open("w", encoding="utf-8") as file:
+        for faq in faqs:
+            file.write(
+                json.dumps(
+                    faq,
+                    ensure_ascii=False
+                )
+                + "\n"
+            )
 
 
 def load_synonyms():
@@ -36,95 +57,158 @@ def expand_question(question):
     return expanded
 
 
-def tokens(text):
-    return set(
-        re.findall(r"[가-힣A-Za-z0-9]+", text.lower())
+def make_document(faq):
+    return " ".join(
+        [
+            faq.get("cert", ""),
+            faq.get("category", ""),
+            faq.get("title", ""),
+            faq.get("body", ""),
+            faq.get("reply", ""),
+        ]
     )
 
 
-def retrieve(question, top_k=3, min_score=1):
+FAQ = []
+VECTORIZER = None
+FAQ_MATRIX = None
+
+
+def rebuild_index():
+    global FAQ
+    global VECTORIZER
+    global FAQ_MATRIX
+
+    FAQ = load_faqs()
+
+    documents = [
+        make_document(faq)
+        for faq in FAQ
+    ]
+
+    VECTORIZER = TfidfVectorizer()
+
+    FAQ_MATRIX = VECTORIZER.fit_transform(
+        documents
+    )
+
+
+rebuild_index()
+
+
+def retrieve(question, top_k=1, min_score=0.2):
+    expanded_question = expand_question(question)
+
+    question_vector = VECTORIZER.transform(
+        [expanded_question]
+    )
+
+    similarities = cosine_similarity(
+        question_vector,
+        FAQ_MATRIX
+    )[0]
+
+    ranked_indices = similarities.argsort()[::-1]
+
+    results = []
+
+    for index in ranked_indices:
+        score = similarities[index]
+
+
+        if score < min_score:
+            break
+
+        results.append(
+            (score, FAQ[index])
+        )
+
+        if len(results) >= top_k:
+            break
+
+    return results
+
+
+def add_faq_entry(cert, title, body, keywords):
     faqs = load_faqs()
 
-    expanded_question = expand_question(question)
-    question_lower = expanded_question.lower()
-    question_tokens = tokens(expanded_question)
+    next_id = max(
+        [
+            faq.get("id", 0)
+            for faq in faqs
+            if isinstance(faq.get("id", 0), int)
+        ],
+        default=0,
+    ) + 1
 
-    ranked = []
+    keyword_list = [
+        keyword.strip()
+        for keyword in keywords.split(",")
+        if keyword.strip()
+    ]
 
-    for faq in faqs:
-        title = faq.get("title", "")
-        text = faq.get("text", "")
-        keywords = faq.get("keywords", [])
-
-        searchable_text = (
-            title
-            + " "
-            + text
-            + " "
-            + " ".join(keywords)
-        ).lower()
-
-        score = 0
-
-        for keyword in keywords:
-            if keyword.lower() in question_lower:
-                score += 3
-
-        for token in question_tokens:
-            if len(token) >= 2 and token in searchable_text:
-                score += 1
-
-        certificate_words = [
-            "한식",
-            "지게차",
-            "굴착기",
-            "굴삭기",
-            "요양보호사",
-            "전기기능사",
-            "위생사",
-            "손해평가사",
-            "공인중개사",
-        ]
-
-        for word in certificate_words:
-            if word in question_lower and word in searchable_text:
-                score += 3
-
-        intent_words = [
-            "접수",
-            "시험비",
-            "응시료",
-            "수수료",
-            "시험",
-            "시험시간",
-            "필기",
-            "실기",
-            "합격",
-            "응시자격",
-            "환불",
-            "시험장",
-        ]
-
-        for word in intent_words:
-            if word in question_lower and word in searchable_text:
-                score += 2
-
-        if score >= min_score:
-            ranked.append((score, faq))
-
-    ranked.sort(
-        key=lambda x: x[0],
-        reverse=True,
+    category = (
+        keyword_list[0]
+        if keyword_list
+        else "기타"
     )
 
-    return ranked[:top_k]
+    new_faq = {
+        "id": next_id,
+        "channel": "admin",
+        "caller_type": "general",
+        "cert": cert.strip(),
+        "category": category,
+        "variation_level": "L0",
+        "title": title.strip(),
+        "body": title.strip(),
+        "reply": body.strip(),
+        "resolution": "관리자추가",
+    }
+
+    faqs.append(new_faq)
+
+    save_faqs(faqs)
+    rebuild_index()
+
+    return new_faq
+
+
+def delete_faq_entry(faq_id):
+    faqs = load_faqs()
+
+    try:
+        faq_id = int(faq_id)
+    except ValueError:
+        return False
+
+    new_faqs = [
+        faq
+        for faq in faqs
+        if faq.get("id") != faq_id
+    ]
+
+    if len(new_faqs) == len(faqs):
+        return False
+
+    save_faqs(new_faqs)
+    rebuild_index()
+
+    return True
+
+
+def get_faq_list():
+    return load_faqs()
 
 
 def build_prompt(question, results):
     context = "\n\n".join(
         f"[FAQ {i + 1}]\n"
-        f"제목: {faq['title']}\n"
-        f"내용: {faq['text']}"
+        f"자격증: {faq.get('cert', '')}\n"
+        f"분류: {faq.get('category', '')}\n"
+        f"제목: {faq.get('title', '')}\n"
+        f"질문: {faq.get('body', '')}\n"
+        f"답변: {faq.get('reply', '')}"
         for i, (_, faq) in enumerate(results)
     )
 
@@ -154,13 +238,16 @@ def answer_question(question):
             "source": "없음",
         }
 
-    prompt = build_prompt(question, results)
+    prompt = build_prompt(
+        question,
+        results
+    )
 
     try:
         answer = ask_gemini(prompt)
 
         sources = ", ".join(
-            faq["title"]
+            faq.get("title", "")
             for _, faq in results
         )
 
