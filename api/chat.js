@@ -21,7 +21,19 @@ function normalizeQuestion(question) {
     "한식조리기능사": "한식조리",
     "지게차운전기능사": "지게차",
     "굴착기운전기능사": "굴착기",
-    "전기기능사": "전기"
+    "전기기능사": "전기",
+
+    "시험비": "응시료",
+    "시험 비용": "응시료",
+    "시험비용": "응시료",
+    "접수비": "응시료",
+    "수수료": "응시료",
+
+    "합격점수": "합격기준",
+    "합격 점수": "합격기준",
+
+    "시험장소": "시험장",
+    "시험 장소": "시험장"
   };
 
   let result = question;
@@ -32,7 +44,6 @@ function normalizeQuestion(question) {
 
   return result;
 }
-
 function tokenize(text) {
   return String(text || "")
     .toLowerCase()
