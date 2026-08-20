@@ -6,7 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatInput = document.getElementById('chatbot-input');
   const sendBtn = document.getElementById('chatbot-send-btn');
 
-  if (!floatingBtn || !chatWindow || !closeBtn || !messagesContainer || !chatInput || !sendBtn) {
+  if (
+    !floatingBtn ||
+    !chatWindow ||
+    !closeBtn ||
+    !messagesContainer ||
+    !chatInput ||
+    !sendBtn
+  ) {
     return;
   }
 
@@ -14,12 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function toggleChat() {
     const isHidden = chatWindow.classList.contains('chatbot-hidden');
+
     if (isHidden) {
       chatWindow.classList.remove('chatbot-hidden');
+
       if (!isInitialized) {
-        appendMessage('bot', '안녕하세요. 자격증 접수 도우미입니다.\n자격증 시험 접수에 대해 궁금한 내용을 질문해주세요.');
+        appendMessage(
+          'bot',
+          '안녕하세요. 자격증 접수 도우미입니다.\n자격증 시험 접수에 대해 궁금한 내용을 질문해주세요.'
+        );
+
         isInitialized = true;
       }
+
       chatInput.focus();
     } else {
       chatWindow.classList.add('chatbot-hidden');
@@ -31,53 +45,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function appendMessage(sender, text) {
     const messageDiv = document.createElement('div');
+
     messageDiv.className = `chatbot-message chatbot-${sender}`;
     messageDiv.textContent = text;
+
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
     return messageDiv;
   }
 
   async function sendMessage() {
     const text = chatInput.value.trim();
-    if (!text) return;
+
+    if (!text) {
+      return;
+    }
 
     chatInput.value = '';
+
     appendMessage('user', text);
 
-    const loadingDiv = appendMessage('loading', '답변을 작성중입니다...');
+    const loadingDiv = appendMessage(
+      'loading',
+      '답변을 작성중입니다...'
+    );
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
+
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: text })
+
+        body: JSON.stringify({
+          message: text
+        })
       });
 
       const data = await response.json();
 
-      messagesContainer.removeChild(loadingDiv);
+      if (messagesContainer.contains(loadingDiv)) {
+        messagesContainer.removeChild(loadingDiv);
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || '답변을 불러오지 못했습니다.');
+        throw new Error(
+          data.error || '답변을 불러오지 못했습니다.'
+        );
       }
 
       appendMessage('bot', data.answer);
 
     } catch (error) {
       console.error('Chat error:', error);
+
       if (messagesContainer.contains(loadingDiv)) {
         messagesContainer.removeChild(loadingDiv);
       }
-      appendMessage('bot', '답변을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+
+      appendMessage(
+        'bot',
+        '답변을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
+      );
     }
   }
 
   sendBtn.addEventListener('click', sendMessage);
 
   chatInput.addEventListener('keydown', (e) => {
+    // 한글 조합을 끝내는 Enter는 메시지 전송으로 처리하지 않음
+    if (e.isComposing || e.keyCode === 229) {
+      return;
+    }
+
     if (e.key === 'Enter') {
       e.preventDefault();
       sendMessage();
