@@ -36,8 +36,7 @@ def save_faqs(faqs):
                 json.dumps(
                     faq,
                     ensure_ascii=False
-                )
-                + "\n"
+                ) + "\n"
             )
 
 
@@ -56,7 +55,7 @@ def load_synonyms():
 
 def expand_question(question):
     synonyms = load_synonyms()
-    expanded = question
+    expanded = question.strip()
 
     for short, full in synonyms.items():
         if short in expanded:
@@ -66,141 +65,74 @@ def expand_question(question):
 
 
 # -------------------------
-# 검색 문서 생성
+# 자격증 별칭
 # -------------------------
 
-def make_document(faq):
-    return " ".join(
-        [
-            faq.get("cert", ""),
-            faq.get("category", ""),
-            faq.get("title", ""),
-            faq.get("body", ""),
-            faq.get("reply", ""),
-        ]
-    )
+CERT_ALIASES = {
+    "굴착기": [
+        "굴착기",
+        "굴착기운전",
+        "굴착기운전기능사",
+    ],
 
+    "지게차": [
+        "지게차",
+        "지게차운전",
+        "지게차운전기능사",
+    ],
 
-FAQ = []
-VECTORIZER = None
-FAQ_MATRIX = None
+    "전기": [
+        "전기",
+        "전기기능사",
+    ],
 
+    "한식조리": [
+        "한식",
+        "한식조리",
+        "한식조리기능사",
+    ],
 
-def rebuild_index():
-    global FAQ
-    global VECTORIZER
-    global FAQ_MATRIX
+    "요양보호사": [
+        "요양보호사",
+    ],
 
-    FAQ = load_faqs()
+    "공인중개사": [
+        "공인중개사",
+    ],
 
-    documents = [
-        make_document(faq)
-        for faq in FAQ
-    ]
-
-    VECTORIZER = TfidfVectorizer()
-
-    FAQ_MATRIX = VECTORIZER.fit_transform(
-        documents
-    )
-
-
-rebuild_index()
+    "손해평가사": [
+        "손해평가사",
+    ],
+}
 
 
 # -------------------------
-# 자격증명 인식
+# 자격증 인식
 # -------------------------
-
-def make_cert_variations(cert):
-    """
-    정식 자격증명에서 사용자가 입력할 법한
-    짧은 이름들을 자동으로 만든다.
-
-    예:
-    굴착기운전기능사 -> 굴착기운전기능사, 굴착기운전, 굴착기
-    한식조리기능사 -> 한식조리기능사, 한식조리, 한식
-    지게차운전기능사 -> 지게차운전기능사, 지게차운전, 지게차
-    """
-
-    cert = cert.strip()
-
-    variations = {cert}
-
-    suffixes = [
-        "산업기사",
-        "운전기능사",
-        "기능사",
-        "기사",
-        "기능장",
-        "기술사",
-    ]
-
-    for suffix in suffixes:
-        if cert.endswith(suffix):
-            short = cert[:-len(suffix)].strip()
-
-            if len(short) >= 2:
-                variations.add(short)
-
-    # '운전' 제거
-    for variation in list(variations):
-        if variation.endswith("운전"):
-            short = variation[:-2].strip()
-
-            if len(short) >= 2:
-                variations.add(short)
-
-    # '조리' 제거
-    for variation in list(variations):
-        if variation.endswith("조리"):
-            short = variation[:-2].strip()
-
-            if len(short) >= 2:
-                variations.add(short)
-
-    return sorted(
-        variations,
-        key=len,
-        reverse=True
-    )
-
 
 def find_cert(question):
-    """
-    사용자의 질문에 어떤 자격증이 포함되어 있는지 찾는다.
-    FAQ에 실제 등록된 자격증을 기준으로 자동 동작한다.
-    """
-
-    expanded_question = expand_question(question).strip()
-
-    certs = {
-        faq.get("cert", "").strip()
-        for faq in FAQ
-        if faq.get("cert", "").strip()
-    }
+    expanded = expand_question(question)
 
     matches = []
 
-    for cert in certs:
-        variations = make_cert_variations(cert)
+    for cert, aliases in CERT_ALIASES.items():
 
-        for variation in variations:
-            if variation in expanded_question:
+        for alias in aliases:
+
+            if alias in expanded:
                 matches.append(
                     (
-                        len(variation),
+                        len(alias),
                         cert,
-                        variation,
                     )
                 )
 
     if not matches:
         return None
 
-    # 가장 구체적으로 일치한 자격증 우선
+    # 가장 긴 이름이 일치한 것을 우선
     matches.sort(
-        key=lambda x: x[0],
+        key=lambda item: item[0],
         reverse=True
     )
 
@@ -208,72 +140,110 @@ def find_cert(question):
 
 
 def is_cert_only_question(question, cert):
-    """
-    사용자가 자격증 이름만 입력했는지 확인한다.
+    expanded = expand_question(question).strip()
 
-    예:
-    굴착기
-    지게차
-    한식
-    한식조리
-    """
+    aliases = CERT_ALIASES.get(
+        cert,
+        [cert]
+    )
 
-    expanded_question = expand_question(question).strip()
+    return expanded in aliases
 
-    variations = make_cert_variations(cert)
 
-    return expanded_question in variations
+# -------------------------
+# 검색용 문서
+# -------------------------
+
+def make_document(faq):
+    return " ".join(
+        [
+            faq.get("category", ""),
+            faq.get("title", ""),
+            faq.get("body", ""),
+            faq.get("reply", ""),
+            faq.get("resolution", ""),
+        ]
+    )
+
+
+FAQ = []
+
+
+def rebuild_index():
+    global FAQ
+
+    FAQ = load_faqs()
+
+
+rebuild_index()
 
 
 # -------------------------
 # FAQ 검색
 # -------------------------
 
-def retrieve(question, top_k=1, min_score=0.2):
+def retrieve(question, top_k=1, min_score=0.15):
     expanded_question = expand_question(question)
 
-    # 먼저 자격증을 인식
     detected_cert = find_cert(expanded_question)
 
-    # 자격증이 인식되면
-    # 해당 자격증 FAQ 안에서만 검색
+    # 자격증을 인식했다면
+    # 해당 자격증 FAQ만 검색
     if detected_cert:
-        candidate_indices = [
-            index
-            for index, faq in enumerate(FAQ)
+
+        candidates = [
+            faq
+            for faq in FAQ
             if faq.get("cert", "").strip() == detected_cert
         ]
 
     else:
-        candidate_indices = list(
-            range(len(FAQ))
+
+        candidates = FAQ
+
+    if not candidates:
+        return []
+
+    documents = [
+        make_document(faq)
+        for faq in candidates
+    ]
+
+    vectorizer = TfidfVectorizer()
+
+    try:
+        document_matrix = vectorizer.fit_transform(
+            documents
         )
 
-    question_vector = VECTORIZER.transform(
-        [expanded_question]
-    )
+        question_vector = vectorizer.transform(
+            [expanded_question]
+        )
+
+    except ValueError:
+        return []
 
     similarities = cosine_similarity(
         question_vector,
-        FAQ_MATRIX
+        document_matrix
     )[0]
 
-    ranked_indices = sorted(
-        candidate_indices,
-        key=lambda index: similarities[index],
-        reverse=True,
-    )
+    ranked_indices = similarities.argsort()[::-1]
 
     results = []
 
     for index in ranked_indices:
+
         score = similarities[index]
 
         if score < min_score:
             continue
 
         results.append(
-            (score, FAQ[index])
+            (
+                score,
+                candidates[index]
+            )
         )
 
         if len(results) >= top_k:
@@ -293,7 +263,10 @@ def add_faq_entry(cert, title, body, keywords):
         [
             faq.get("id", 0)
             for faq in faqs
-            if isinstance(faq.get("id", 0), int)
+            if isinstance(
+                faq.get("id", 0),
+                int
+            )
         ],
         default=0,
     ) + 1
@@ -326,6 +299,7 @@ def add_faq_entry(cert, title, body, keywords):
     faqs.append(new_faq)
 
     save_faqs(faqs)
+
     rebuild_index()
 
     return new_faq
@@ -340,6 +314,7 @@ def delete_faq_entry(faq_id):
 
     try:
         faq_id = int(faq_id)
+
     except ValueError:
         return False
 
@@ -353,6 +328,7 @@ def delete_faq_entry(faq_id):
         return False
 
     save_faqs(new_faqs)
+
     rebuild_index()
 
     return True
@@ -380,11 +356,15 @@ def build_prompt(question, results):
     return f"""
 너는 자격증 시험 접수 안내 챗봇이다.
 
-아래 FAQ 내용만 근거로 사용해서 사용자의 질문에 답해라.
-FAQ에서 확인할 수 없는 내용은 추측하지 마라.
-질문과 직접 관련된 FAQ를 우선해서 답변해라.
-다른 자격증의 정보를 섞어서 답변하지 마라.
-답변은 이해하기 쉽게 간결하게 작성해라.
+반드시 아래 FAQ 내용만 근거로 답변해라.
+
+규칙:
+1. FAQ에 있는 내용만 답변한다.
+2. 다른 자격증의 정보를 섞지 않는다.
+3. FAQ에 없는 정보는 추측하지 않는다.
+4. FAQ의 답변 내용을 우선 사용한다.
+5. 답변은 짧고 이해하기 쉽게 작성한다.
+6. "업데이트되는 대로 안내하겠다" 같은 FAQ에 없는 약속은 하지 않는다.
 
 [FAQ]
 {context}
@@ -402,42 +382,20 @@ def answer_question(question):
     question = question.strip()
 
     if not question:
+
         return {
             "status": "NOT_FOUND",
             "answer": "질문을 입력해주세요.",
             "source": "없음",
         }
 
-    # 자격증 인식
     detected_cert = find_cert(question)
 
-    # 자격증 이름만 입력한 경우
-    if detected_cert and is_cert_only_question(
-        question,
-        detected_cert
-    ):
-        return {
-            "status": "NOT_FOUND",
-            "answer": (
-                f"{detected_cert}에 대해 어떤 정보가 궁금하신가요? "
-                "시험비, 접수 방법, 시험 일정 등 궁금한 내용을 질문해주세요."
-            ),
-            "source": "없음",
-        }
+    # -------------------------
+    # 자격증 자체를 찾지 못함
+    # -------------------------
 
-    # FAQ 검색
-    results = retrieve(question)
-
-    if not results:
-        if detected_cert:
-            return {
-                "status": "NOT_FOUND",
-                "answer": (
-                    f"{detected_cert}에 대한 질문은 인식했지만, "
-                    "해당 내용은 FAQ에서 확인할 수 없습니다."
-                ),
-                "source": "없음",
-            }
+    if not detected_cert:
 
         return {
             "status": "NOT_FOUND",
@@ -448,27 +406,68 @@ def answer_question(question):
             "source": "없음",
         }
 
-    # Gemini 답변 생성
+    # -------------------------
+    # 자격증 이름만 입력
+    # -------------------------
+
+    if is_cert_only_question(
+        question,
+        detected_cert
+    ):
+
+        return {
+            "status": "NOT_FOUND",
+            "answer": (
+                f"{detected_cert}에 대해 어떤 정보가 궁금하신가요? "
+                "시험비, 접수 방법, 시험 일정 등 궁금한 내용을 질문해주세요."
+            ),
+            "source": "없음",
+        }
+
+    # -------------------------
+    # 해당 자격증 FAQ 검색
+    # -------------------------
+
+    results = retrieve(question)
+
+    if not results:
+
+        return {
+            "status": "NOT_FOUND",
+            "answer": (
+                f"{detected_cert}에 대한 질문은 인식했지만, "
+                "해당 내용은 FAQ에서 확인할 수 없습니다."
+            ),
+            "source": "없음",
+        }
+
+    # -------------------------
+    # Gemini 답변
+    # -------------------------
+
     prompt = build_prompt(
         question,
         results
     )
 
     try:
+
         answer = ask_gemini(prompt)
 
         sources = ", ".join(
             faq.get("title", "")
             for _, faq in results
+            if faq.get("title", "")
         )
 
         return {
             "status": "FOUND",
             "answer": answer,
-            "source": sources,
+            "source": sources or "없음",
         }
 
     except Exception as e:
+
         return {
             "status": "ERROR",
             "answer": str(e),
