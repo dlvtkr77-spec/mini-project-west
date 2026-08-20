@@ -1587,23 +1587,39 @@ applicationForm.addEventListener(
       }
 
 
-      /* =========================
-         성공 팝업
-      ========================= */
+/* =========================
+   성공 팝업
+========================= */
 
-      completeCertificate.textContent =
-        certificate;
+completeCertificate.textContent =
+  certificate;
 
-      completeModal.classList.add(
-        "show"
-      );
+completeModal.classList.add(
+  "show"
+);
 
 
-      console.log(
-        "저장된 접수 데이터:",
-        data
-      );
+/* =========================
+   접수 정보 초기화
+========================= */
 
+applicationForm.reset();
+
+document
+  .querySelectorAll(
+    ".certificate-card"
+  )
+  .forEach(card => {
+    card.classList.remove(
+      "selected"
+    );
+  });
+
+
+console.log(
+  "저장된 접수 데이터:",
+  data
+);
 
     } catch (error) {
 
